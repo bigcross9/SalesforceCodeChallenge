@@ -3,8 +3,8 @@
     <actionCalls>
         <name>apiCall</name>
         <label>apiCall</label>
-        <locationX>314</locationX>
-        <locationY>242</locationY>
+        <locationX>578</locationX>
+        <locationY>458</locationY>
         <actionName>ITJ_ZipCodeAPICall</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -17,7 +17,7 @@
         <inputParameters>
             <name>countryCode</name>
             <value>
-                <elementReference>Enter_Country_Code</elementReference>
+                <elementReference>countryAbbvMapped</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -47,8 +47,8 @@
     <assignments>
         <name>assign_Collection</name>
         <label>assign Collection</label>
-        <locationX>314</locationX>
-        <locationY>350</locationY>
+        <locationX>578</locationX>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>ZipcodeScreenColl</assignToReference>
             <operator>Add</operator>
@@ -63,8 +63,8 @@
     <assignments>
         <name>Assign_Record</name>
         <label>Assign Record</label>
-        <locationX>578</locationX>
-        <locationY>566</locationY>
+        <locationX>842</locationX>
+        <locationY>782</locationY>
         <assignmentItems>
             <assignToReference>NonUSZipDataObj.ITJ_Country__c</assignToReference>
             <operator>Assign</operator>
@@ -100,8 +100,8 @@
     <decisions>
         <name>Check_Country</name>
         <label>Check Country</label>
-        <locationX>314</locationX>
-        <locationY>458</locationY>
+        <locationX>578</locationX>
+        <locationY>674</locationY>
         <defaultConnector>
             <targetReference>Assign_Record</targetReference>
         </defaultConnector>
@@ -110,7 +110,7 @@
             <name>isUSCode</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Enter_Country_Code</leftValueReference>
+                <leftValueReference>countryAbbvMapped</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>US</stringValue>
@@ -144,17 +144,32 @@
             <label>is response empty</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Country_not_Found</name>
+        <label>Country not Found</label>
+        <locationX>314</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>apiCall</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>notfoundcheck_country</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>countryAbbvMapped</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Country_Not_Found_Screen</targetReference>
+            </connector>
+            <label>check country</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
-    <formulas>
-        <name>isValidCountryCode</name>
-        <dataType>Boolean</dataType>
-        <expression>LEN({!Enter_Country_Code}) != 2</expression>
-    </formulas>
-    <formulas>
-        <name>validateCountryCode</name>
-        <dataType>String</dataType>
-        <expression>IF(LEN({!Enter_Country_Code}) != 2, &apos;Not valid Country Code&apos;,&apos;&apos;)</expression>
-    </formulas>
     <interviewLabel>ITJ_ZippopotamFlow {!$Flow.CurrentDateTime}</interviewLabel>
     <label>ITJ_ZippopotamFlow</label>
     <processMetadataValues>
@@ -179,18 +194,41 @@
     <recordCreates>
         <name>create_Non_US_Data</name>
         <label>create Non US Data</label>
-        <locationX>578</locationX>
-        <locationY>674</locationY>
+        <locationX>842</locationX>
+        <locationY>890</locationY>
         <connector>
             <targetReference>getAllRecords</targetReference>
         </connector>
         <inputReference>NonUSZipDataObj</inputReference>
     </recordCreates>
     <recordLookups>
+        <name>Get_Contries</name>
+        <label>Get Contries</label>
+        <locationX>314</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Country_not_Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Country_Name__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Enter_Country</elementReference>
+            </value>
+        </filters>
+        <object>Country_Code__mdt</object>
+        <outputAssignments>
+            <assignToReference>countryAbbvMapped</assignToReference>
+            <field>Country_Abbreviation__c</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
         <name>getAllRecords</name>
         <label>getAllRecords</label>
-        <locationX>578</locationX>
-        <locationY>782</locationY>
+        <locationX>842</locationX>
+        <locationY>998</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>All_Records</targetReference>
@@ -204,8 +242,8 @@
     <screens>
         <name>All_Records</name>
         <label>All Records</label>
-        <locationX>578</locationX>
-        <locationY>890</locationY>
+        <locationX>842</locationX>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -255,10 +293,26 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Country_Not_Found_Screen</name>
+        <label>Country Not Found</label>
+        <locationX>50</locationX>
+        <locationY>458</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>notFoundTxt</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(241, 87, 87); font-size: 18px;&quot;&gt;Country Abbreviation &lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;not found!&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Opps</name>
         <label>Opps!!</label>
-        <locationX>842</locationX>
-        <locationY>350</locationY>
+        <locationX>1106</locationX>
+        <locationY>566</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -273,8 +327,8 @@
     <screens>
         <name>Results</name>
         <label>Results</label>
-        <locationX>50</locationX>
-        <locationY>566</locationY>
+        <locationX>314</locationX>
+        <locationY>782</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -305,18 +359,14 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>apiCall</targetReference>
+            <targetReference>Get_Contries</targetReference>
         </connector>
         <fields>
-            <name>Enter_Country_Code</name>
+            <name>Enter_Country</name>
             <dataType>String</dataType>
-            <fieldText>Enter Country Code</fieldText>
+            <fieldText>Enter Country</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
-            <validationRule>
-                <errorMessage>&lt;p&gt;Invalid Country Code&lt;/p&gt;</errorMessage>
-                <formulaExpression>LEN({!Enter_Country_Code}) ==2</formulaExpression>
-            </validationRule>
         </fields>
         <fields>
             <name>Enter_Zipcode</name>
@@ -332,8 +382,8 @@
     <screens>
         <name>X404</name>
         <label>404</label>
-        <locationX>314</locationX>
-        <locationY>566</locationY>
+        <locationX>578</locationX>
+        <locationY>782</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -353,6 +403,13 @@
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <name>countryAbbvMapped</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>dataTableDetails</name>
         <apexClass>ITJ_ZipcodeScreen</apexClass>

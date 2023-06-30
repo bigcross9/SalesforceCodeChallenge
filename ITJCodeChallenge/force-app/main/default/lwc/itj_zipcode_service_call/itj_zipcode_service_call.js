@@ -11,10 +11,10 @@ import JSON_REPONSE_FIELDS from '@salesforce/schema/ITJ_Zipcode__c.ITJ_Non_US_Re
 
 export default class Itj_zipcode_service_call extends NavigationMixin(LightningElement) {
 
-    @track usData;
-    @track countryNameValue;
-    @track zipcodeValue;
-    @track countryNamesObj;
+    usData;
+    countryNameValue;
+    zipcodeValue;
+    countryNamesObj;
     countryAbbv;
     connectedCallback(){
         console.log('lowercase check');
@@ -22,6 +22,8 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
             .then((response) => response.json())
             .then((data) => {
                 this.countryNamesObj = data;
+            }).catch(error => {
+                console.log('Error when reading static resource ' + error);
             });
         
     }
@@ -86,8 +88,11 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
 
         countryCode = this.getKeyByValue(this.countryNamesObj, this.countryNameValue);
 
-        console.log("country code2" + countryCode);
-        this.getZipDetails(countryCode, this.zipcodeValue);
+        console.log("country code2 " + countryCode);
+        if(countryCode !== undefined && countryCode !== "undefined" && countryCode !== null){
+            console.log("country code found!")
+            this.getZipDetails(countryCode, this.zipcodeValue);
+        }
      }
 
      saveNonUSRecords(postalCode, country, countryAbbv, jsonResponse){
