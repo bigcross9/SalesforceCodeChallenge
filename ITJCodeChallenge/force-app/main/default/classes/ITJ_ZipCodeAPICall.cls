@@ -25,9 +25,7 @@ public with sharing class ITJ_ZipCodeAPICall {
         Http h = new Http();
 
         HttpRequest req = new HttpRequest();
-        String url = 'https://api.zippopotam.us/' + inputDataList[0].countryCode + '/' + inputDataList[0].postalCode;
-        System.debug('url:::: ' + url);
-        req.setEndpoint(url);
+        req.setEndpoint('callout:ITJZippopotam_API/' + inputDataList[0].countryCode + '/' + inputDataList[0].postalCode);
         req.setMethod('GET');
 
         HttpResponse res = h.send(req);
