@@ -29,7 +29,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
     }
 
    
-    
+    //Makes the call to zippopotam api to retrieve the details of the zipcode
     getZipDetails(countryCode, zipCode) {
         let usData = [];
         const calloutURI = 'https://api.zippopotam.us/'+ countryCode +'/' + zipCode;
@@ -38,6 +38,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
              method: "GET"
          }).then((response) => {
             console.log('response status ' +  response.status);
+             if the response from the call is not 200 shows a gentle message to the user
             if(response.status !== 200){
                 const evt = new ShowToastEvent({
                     title: 'Error',
@@ -46,6 +47,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
                 });
                 this.dispatchEvent(evt);
             }
+             //returns the body of the response
             return response.json();
         })
         .then(data => {
@@ -69,11 +71,13 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
         });
      }
 
+    //passing the object and value it going to find the key related to its value. i.e. United States is the value and the key is US
      getKeyByValue(object, value) {
 
         return Object.keys(object).find(key => object[key].toLowerCase() === value.toLowerCase());
      }
 
+    //stores the value from the inputs
      handleChange(event){
         if (event.target.dataset.id === "countryNameText") {
             this.countryNameValue = event.target.value;
@@ -83,6 +87,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
         }
      }
 
+    //make the search and invoke the api call
      handleClick(){
         let countryCode;
 
@@ -95,6 +100,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
         }
      }
 
+    //when the user search for zip code from another country than US it should create a record with the response in a custom object
      saveNonUSRecords(postalCode, country, countryAbbv, jsonResponse){
         const fields = {};
         fields[POSTAL_CODE_FIELD.fieldApiName] = postalCode;
