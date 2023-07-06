@@ -1,3 +1,6 @@
+/**
+ * apex-defined class to show the results with Flows
+ */
 public class ITJ_ZipcodeScreen {
     @AuraEnabled
     public String country;
@@ -7,4 +10,6 @@ public class ITJ_ZipcodeScreen {
     public String countryAbbv;
     @AuraEnabled
     public String jsonResponse;
+    @AuraEnabled
+    public String places;
 }

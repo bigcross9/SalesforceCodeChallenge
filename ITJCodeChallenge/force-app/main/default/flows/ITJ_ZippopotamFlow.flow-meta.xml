@@ -39,6 +39,10 @@
             <name>jsonResponse</name>
         </outputParameters>
         <outputParameters>
+            <assignToReference>ZipcodeScreen.places</assignToReference>
+            <name>places</name>
+        </outputParameters>
+        <outputParameters>
             <assignToReference>ZipcodeScreen.postalCode</assignToReference>
             <name>postalCode</name>
         </outputParameters>
@@ -345,6 +349,11 @@
         <fields>
             <name>zipcodePostalCode</name>
             <fieldText>&lt;p&gt;{!ZipcodeScreen.postalCode}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>zipCodePlaces</name>
+            <fieldText>&lt;p&gt;{!ZipcodeScreen.places}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>

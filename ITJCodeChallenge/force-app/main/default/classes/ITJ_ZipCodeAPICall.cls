@@ -9,6 +9,8 @@ public with sharing class ITJ_ZipCodeAPICall {
         public String countryAbbv;
         @InvocableVariable
         public String jsonResponse;
+        @InvocableVariable
+        public String places;
     }
 
     public class InputData{
@@ -25,7 +27,9 @@ public with sharing class ITJ_ZipCodeAPICall {
         Http h = new Http();
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint('callout:ITJZippopotam_API/' + inputDataList[0].countryCode + '/' + inputDataList[0].postalCode);
+        String url = 'https://api.zippopotam.us/' + inputDataList[0].countryCode + '/' + inputDataList[0].postalCode;
+        System.debug('url:::: ' + url);
+        req.setEndpoint(url);
         req.setMethod('GET');
 
         HttpResponse res = h.send(req);
@@ -44,6 +48,19 @@ public with sharing class ITJ_ZipCodeAPICall {
                     }
                     else if(text == 'country abbreviation'){
                         zipDetails.countryAbbv = parser.getText();
+                    }
+                    else if(text == 'places'){
+                        zipDetails.places = '[';
+                        if(parser.getCurrentToken() == JSONToken.START_ARRAY) {
+                            while(parser.getCurrentToken() != JSONToken.END_ARRAY) {
+                                parser.nextToken();
+                                if(parser.getText() != 'null' && parser.getCurrentToken() != JSONToken.END_OBJECT){
+                                    zipDetails.places += parser.getText() + ' ';
+                                }else {
+                                    zipDetails.places += parser.getText();
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -17,7 +17,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
     countryNamesObj;
     countryAbbv;
     connectedCallback(){
-        console.log('lowercase check');
+        console.log('all check');
         fetch(COUNTRY_NAMES)
             .then((response) => response.json())
             .then((data) => {
@@ -38,7 +38,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
              method: "GET"
          }).then((response) => {
             console.log('response status ' +  response.status);
-             if the response from the call is not 200 shows a gentle message to the user
+            // if the response from the call is not 200 shows a gentle message to the user
             if(response.status !== 200){
                 const evt = new ShowToastEvent({
                     title: 'Error',
@@ -53,6 +53,8 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
         .then(data => {
             console.log(JSON.stringify(data))
             if(data !== undefined && data !== 'undefined' && data !== null  && Object.keys(data).length !== 0 && data !== ''){
+                data['places'] = JSON.stringify(data['places']);
+                console.log('places:  ' + data.places);
                 if(data['country abbreviation'] === 'US'){
                     usData.push(data);
                     this.usData = usData;
@@ -127,7 +129,7 @@ export default class Itj_zipcode_service_call extends NavigationMixin(LightningE
                         actionName: 'list'
                     },
                     state: {       
-                        filterName: '00BDm000004bZ50MAE'
+                        filterName: 'All'
                     },
                 });
             })
